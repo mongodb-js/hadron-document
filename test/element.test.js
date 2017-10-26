@@ -75,6 +75,97 @@ describe('Element', function() {
     });
   });
 
+  describe('#at', function() {
+    context('when the element is not expandable', function() {
+      var element = new Element('name', 'test');
+
+      it('returns undefined', function() {
+        expect(element.at(0)).to.equal(undefined);
+      });
+    });
+
+    context('when the element exists for the index', function() {
+      var element = new Element('key', ['item0', 'item1']);
+
+      it('returns the element', function() {
+        expect(element.at(0).currentValue).to.equal('item0');
+        expect(element.at(1).currentValue).to.equal('item1');
+      });
+    });
+
+    context('when the element exists but one has been removed', function() {
+      var element = new Element('key', ['item0', 'item1']);
+
+      before(function() {
+        element.at(0).remove();
+      });
+
+      it('returns the original elements', function() {
+        expect(element.at(0).currentValue).to.equal('item0');
+        expect(element.at(0).currentKey).to.equal(0);
+        expect(element.at(1).currentValue).to.equal('item1');
+        expect(element.at(1).currentKey).to.equal(1);
+      });
+    });
+
+    context('when the element is deleted', function() {
+      var element = new Element('key', []);
+      var child = element.insertEnd('', 'test');
+
+      before(function() {
+        child.remove();
+      });
+
+      it('returns undefined', function() {
+        expect(element.at(0)).to.equal(undefined);
+      });
+    });
+
+    context('when the element is deleted from the middle', function() {
+      var element = new Element('key', []);
+      var child1 = element.insertEnd('', 'test1');
+      element.insertEnd('', 'test2');
+      var child2 = element.insertEnd('', 'test3');
+      element.insertEnd('', 'test4');
+      var child3 = element.insertEnd('', 'test5');
+
+      before(function() {
+        child1.remove();
+        child2.remove();
+        child3.remove();
+      });
+
+      it('returns undefined', function() {
+        expect(element.at(0).currentValue).to.equal('test2');
+        expect(element.at(0).currentKey).to.equal(0);
+        expect(element.at(1).currentValue).to.equal('test4');
+        expect(element.at(1).currentKey).to.equal(1);
+        expect(element.at(2)).to.equal(undefined);
+      });
+    });
+
+    context('when the element value is changed', function() {
+      var element = new Element('key', ['test']);
+      var child = element.elements.at(0);
+
+      before(function() {
+        child.edit('test2');
+      });
+
+      it('returns the new element for the index', function() {
+        expect(element.at(0)).to.equal(child);
+      });
+    });
+
+    context('when the element does not exist for the key', function() {
+      var element = new Element('key', ['item0', 'item1']);
+
+      it('returns undefined', function() {
+        expect(element.get(2)).to.equal(undefined);
+      });
+    });
+  });
+
   describe('#cancel', function() {
     context('when the element is invalid', function() {
       var doc = new Document({});
@@ -300,11 +391,17 @@ describe('Element', function() {
 
       before(function() {
         element.insertEnd('', 'home@example.com');
+        element.insertEnd('ignore', 'home@example.com2');
+        element.insertEnd(3, 'home@example.com3');
       });
 
-      it('adds the new embedded element', function() {
-        expect(element.elements.at(1).key).to.equal('');
+      it('adds the new embedded elements', function() {
+        expect(element.elements.at(1).currentKey).to.equal(1);
         expect(element.elements.at(1).value).to.equal('home@example.com');
+        expect(element.elements.at(2).currentKey).to.equal(2);
+        expect(element.elements.at(2).value).to.equal('home@example.com2');
+        expect(element.elements.at(3).currentKey).to.equal(3);
+        expect(element.elements.at(3).value).to.equal('home@example.com3');
       });
 
       it('flags the new element as added', function() {
@@ -321,7 +418,6 @@ describe('Element', function() {
       });
 
       it('adds the new embedded element', function() {
-        expect(element.elements.at(0).key).to.equal('');
         expect(element.elements.at(0).elements.at(0).key).to.equal('home');
         expect(element.elements.at(0).elements.at(0).value).to.equal('home@example.com');
       });
@@ -334,6 +430,55 @@ describe('Element', function() {
       it('does not flag the new elements as edited', function() {
         expect(element.elements.at(0).isEdited()).to.equal(false);
         expect(element.elements.at(0).elements.at(0).isEdited()).to.equal(false);
+      });
+    });
+  });
+
+  describe('#insertAfter', function() {
+    context('when the new embedded element is a document', function() {
+      var doc = new Document({});
+      var element = new Element('email', { key0: 'item0', key2: 'item2' }, false, doc);
+
+      before(function() {
+        element.insertAfter(element.at(0), 'key1', 'item1');
+      });
+
+      it('adds the new embedded element', function() {
+        expect(element.elements.at(1).key).to.equal('key1');
+        expect(element.elements.at(1).value).to.equal('item1');
+      });
+
+      it('flags the new element as added', function() {
+        expect(element.elements.at(1).isAdded()).to.equal(true);
+      });
+    });
+
+    context('when the embedded element is an array', function() {
+      var doc = new Document({});
+      var element = new Element('emails', [ 'item0' ], false, doc);
+
+      before(function() {
+        element.insertAfter(element.at(0), 'key3', 'item3');
+        element.insertAfter(element.at(0), 'ignore', 'item1');
+        element.insertAfter(element.at(1), '', 'item2');
+      });
+
+      it('adds the new embedded elements', function() {
+        expect(element.elements.at(0).currentKey).to.equal(0);
+        expect(element.elements.at(0).value).to.equal('item0');
+        expect(element.elements.at(1).currentKey).to.equal(1);
+        expect(element.elements.at(1).value).to.equal('item1');
+        expect(element.elements.at(2).currentKey).to.equal(2);
+        expect(element.elements.at(2).value).to.equal('item2');
+        expect(element.elements.at(3).currentKey).to.equal(3);
+        expect(element.elements.at(3).value).to.equal('item3');
+      });
+
+      it('flags the new element as added', function() {
+        expect(element.elements.at(0).isAdded()).to.equal(false);
+        expect(element.elements.at(1).isAdded()).to.equal(true);
+        expect(element.elements.at(2).isAdded()).to.equal(true);
+        expect(element.elements.at(3).isAdded()).to.equal(true);
       });
     });
   });
@@ -409,7 +554,7 @@ describe('Element', function() {
         });
 
         it('changes the element to an array', function() {
-          expect(last.elements.at(0).currentKey).to.equal('');
+          expect(last.elements.at(0).currentKey).to.equal(0);
           expect(last.elements.at(0).currentValue).to.equal('');
         });
       });
@@ -429,7 +574,7 @@ describe('Element', function() {
         });
 
         it('adds the additional elements to the array', function() {
-          expect(last.elements.at(1).currentKey).to.equal('');
+          expect(last.elements.at(1).currentKey).to.equal(1);
           expect(last.elements.at(1).currentValue).to.equal('');
         });
       });
@@ -1192,7 +1337,7 @@ describe('Element', function() {
 
           it('changes the document to an embedded document', function() {
             expect(element.elements.size).to.equal(1);
-            expect(element.elements.at(0).key).to.equal('');
+            expect(element.elements.at(0).key).to.equal(0);
             expect(element.elements.at(0).value).to.equal('home@example.com');
           });
 
