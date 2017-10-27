@@ -121,7 +121,7 @@ describe('Element', function() {
       });
     });
 
-    context('when the element is deleted from the middle', function() {
+    context('when elements are deleted from the middle', function() {
       var element = new Element('key', []);
       var child1 = element.insertEnd('', 'test1');
       element.insertEnd('', 'test2');
@@ -135,7 +135,7 @@ describe('Element', function() {
         child3.remove();
       });
 
-      it('returns undefined', function() {
+      it('returns the correct elements', function() {
         expect(element.at(0).currentValue).to.equal('test2');
         expect(element.at(0).currentKey).to.equal(0);
         expect(element.at(1).currentValue).to.equal('test4');
