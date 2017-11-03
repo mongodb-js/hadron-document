@@ -2041,7 +2041,33 @@ describe('Element', function() {
     });
 
     describe('#cancel', function() {
-
+      var doc = new Document({});
+      const items = [['00', '01', '02'], ['10', '11', '12']];
+      var element = new Element('items', items, false, doc);
+      before(function() {
+        element.at(1).at(1).remove();
+        element.at(0).insertAfter(element.at(0).at(1), '$new', '99');
+        expect(element.generateObject()).to.deep.equal([
+          ['00', '01', '99', '02'], ['10', '12']
+        ]);
+        element.cancel();
+      });
+      it('reverts the document', function() {
+        expect(element.generateObject()).to.deep.equal(items);
+        expect(element.isModified()).to.equal(false);
+      });
+      it('updates keys correctly', function() {
+        for (let i = 0; i < items.length; i++) {
+          for (let j = 0; j < items[0].length; j++) {
+            const parent = element.at(i);
+            expect(parent.currentKey).to.equal(i);
+            expect(parent.key).to.equal(i);
+            expect(parent.at(j).currentKey).to.equal(j);
+            expect(parent.at(j).key).to.equal(j);
+            expect(parent.at(j).value).to.equal('' + i + j);
+          }
+        }
+      });
     });
   });
 });
