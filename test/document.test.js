@@ -4,6 +4,7 @@ const chai = require('chai');
 const expect = chai.expect;
 const Document = require('../lib/document');
 const SharedExamples = require('./shared-examples');
+const ObjectId = require('bson').ObjectId;
 
 describe('Document', function() {
   describe('#get', function() {
@@ -50,6 +51,71 @@ describe('Document', function() {
 
       it('returns undefined', function() {
         expect(doc.get('test')).to.equal(undefined);
+      });
+    });
+  });
+
+  describe('#getChild', function() {
+    const doc = new Document({
+      array: ['1', [ ['1', ['inner array']]]],
+      object: {a: {b: {c: {d: 'inner object'}}}},
+      mixed: {a: [ {b: [1, {c: 'inner mixed'}]}]}
+    });
+    context('when path is empty', () => {
+      it('returns undefined', () => {
+        expect(doc.getChild([])).to.equal(undefined);
+      });
+    });
+    context('when the path does not exist', () => {
+      it('returns undefined for top level', () => {
+        expect(doc.getChild(['not there'])).to.equal(undefined);
+      });
+      it('returns undefined for object', () => {
+        expect(doc.getChild(['object', 'not there'])).to.equal(undefined);
+      });
+      it('returns undefined for array', () => {
+        expect(doc.getChild(['array', 'not there'])).to.equal(undefined);
+      });
+      it('returns undefined for index too large', () => {
+        expect(doc.getChild(['array', 3])).to.equal(undefined);
+      });
+    });
+    context('when the path is too long', () => {
+      it('returns undefined', () => {
+        expect(doc.getChild(['mixed', 'a', 0, 'b', 1, 'c', 'not there'])).to.equal(undefined);
+      });
+    });
+    context('indexing only into arrays', () => {
+      it('returns the deepest element', () => {
+        const element = doc.getChild(['array', 1, 0, 1, 0]);
+        expect(element.value).to.equal('inner array');
+      });
+      it('returns a  middle element', () => {
+        const element = doc.getChild(['array', 1, 0]);
+        expect(element.currentType).to.equal('Array');
+        expect(element.generateObject()).to.deep.equal(['1', ['inner array']]);
+      });
+    });
+    context('indexing only into objects', () => {
+      it('returns the deepest element', () => {
+        const element = doc.getChild(['object', 'a', 'b', 'c', 'd']);
+        expect(element.value).to.equal('inner object');
+      });
+      it('returns a  middle element', () => {
+        const element = doc.getChild(['object', 'a', 'b']);
+        expect(element.currentType).to.equal('Object');
+        expect(element.generateObject()).to.deep.equal({c: {d: 'inner object'}});
+      });
+    });
+    context('indexing into mixed array and object', () => {
+      it('returns the deepest element', () => {
+        const element = doc.getChild(['mixed', 'a', 0, 'b', 1, 'c']);
+        expect(element.value).to.equal('inner mixed');
+      });
+      it('returns a  middle element', () => {
+        const element = doc.getChild(['mixed', 'a', 0, 'b']);
+        expect(element.currentType).to.equal('Array');
+        expect(element.generateObject()).to.deep.equal([1, {c: 'inner mixed'}]);
       });
     });
   });
@@ -162,6 +228,57 @@ describe('Document', function() {
     });
   });
 
+  describe('#getStringId', function() {
+    context('when the document has no _id element', function() {
+      var doc = new Document({ name: 'test' });
+
+      it('returns null', function() {
+        expect(doc.getStringId()).to.equal(null);
+      });
+    });
+
+    context('when the _id is a string', function() {
+      var doc = new Document({ name: 'test', _id: 'testing' });
+
+      it('returns the _id', function() {
+        expect(doc.getStringId()).to.equal('testing');
+      });
+    });
+
+    context('when the _id is an objectId', function() {
+      const oid = new ObjectId();
+      var doc = new Document({ _id: oid });
+
+      it('returns null', function() {
+        expect(doc.getStringId()).to.equal(oid.toString());
+      });
+    });
+
+    context('when the _id is a number', function() {
+      var doc = new Document({ _id: 5 });
+
+      it('returns null', function() {
+        expect(doc.getStringId()).to.equal('5');
+      });
+    });
+
+    context('when the _id is an array', function() {
+      var doc = new Document({ _id: [1, 2, 3] });
+
+      it('returns null', function() {
+        expect(doc.getStringId()).to.equal('[1,2,3]');
+      });
+    });
+
+    context('when the _id is an object', function() {
+      var doc = new Document({ _id: {test: 'value'} });
+
+      it('returns null', function() {
+        expect(doc.getStringId()).to.equal('{"test":"value"}');
+      });
+    });
+  });
+
   describe('.new', function() {
     context('when the document is flat', function() {
       var object = { name: 'Aphex Twin' };
@@ -205,8 +322,8 @@ describe('Document', function() {
       });
 
       it('sets the element indexes', function() {
-        expect(doc.elements.at(0).elements.at(0).key).to.equal('');
-        expect(doc.elements.at(0).elements.at(1).key).to.equal('');
+        expect(doc.elements.at(0).elements.at(0).key).to.equal(0);
+        expect(doc.elements.at(0).elements.at(1).key).to.equal(1);
       });
 
       it('sets the element original values', function() {
@@ -289,7 +406,7 @@ describe('Document', function() {
         });
 
         it('sets the embedded element key', function() {
-          expect(doc.elements.at(0).elements.at(0).key).to.equal('');
+          expect(doc.elements.at(0).elements.at(0).key).to.equal(0);
         });
 
         it('sets the multi embedded element key', function() {
@@ -318,7 +435,7 @@ describe('Document', function() {
         });
 
         it('sets the multi embedded element key', function() {
-          expect(doc.elements.at(0).elements.at(0).elements.at(0).key).to.equal('');
+          expect(doc.elements.at(0).elements.at(0).elements.at(0).key).to.equal(0);
         });
 
         it('sets the lowest level embedded element key', function() {
