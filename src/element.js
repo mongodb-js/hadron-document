@@ -1,12 +1,13 @@
 'use strict';
-
 const EventEmitter = require('eventemitter3');
-const keys = require('lodash.keys');
-const isObject = require('lodash.isplainobject');
-const isArray = require('lodash.isarray');
-const isEqual = require('lodash.isequal');
-const isString = require('lodash.isstring');
-const includes = require('lodash.includes');
+const {
+  keys,
+  isObject,
+  isArray,
+  isEqual,
+  isString,
+  includes
+} = require('lodash');
 const ObjectGenerator = require('./object-generator');
 const TypeChecker = require('hadron-type-checker');
 const uuid = require('uuid');

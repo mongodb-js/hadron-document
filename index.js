@@ -1,2 +1,2 @@
-module.exports = require('./lib/document');
-module.exports.Element = require('./lib/element');
+module.exports = require('./src/document');
+module.exports.Element = require('./src/element');

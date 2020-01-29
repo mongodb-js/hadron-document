@@ -1,8 +1,7 @@
 'use strict';
-
 const chai = require('chai');
 const expect = chai.expect;
-const Document = require('../lib/document');
+const Document = require('../src/document');
 const SharedExamples = require('./shared-examples');
 const ObjectId = require('bson').ObjectId;
 

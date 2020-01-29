@@ -1,22 +1,22 @@
 'use strict';
 
-const bson = require('bson');
-const ObjectId = bson.ObjectId;
-const Binary = bson.Binary;
-const Code = bson.Code;
-const MaxKey = bson.MaxKey;
-const MinKey = bson.MinKey;
-const Timestamp = bson.Timestamp;
-const Int32 = bson.Int32;
-const Long = bson.Long;
-const Double = bson.Double;
-const Decimal128 = bson.Decimal128;
-
 const chai = require('chai');
+const {
+  ObjectId,
+  Binary,
+  Code,
+  MaxKey,
+  MinKey,
+  Timestamp,
+  Int32,
+  Long,
+  Double,
+  Decimal128
+} = require('bson');
 const expect = chai.expect;
 const moment = require('moment');
-const Document = require('../lib/document');
-const Element = require('../lib/element');
+const Document = require('../src/document');
+const Element = require('../src/element');
 
 describe('Element', function() {
   describe('#get', function() {

@@ -1,5 +1,4 @@
 'use strict';
-
 const EventEmitter = require('eventemitter3');
 const Element = require('./element');
 const LinkedList = Element.LinkedList;

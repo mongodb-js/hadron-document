@@ -1,9 +1,8 @@
 'use strict';
-
 const chai = require('chai');
 const expect = chai.expect;
-const Document = require('../lib/document');
-const ObjectGenerator = require('../lib/object-generator');
+const Document = require('../src/document');
+const ObjectGenerator = require('../src/object-generator');
 
 describe('ObjectGenerator', function() {
   describe('#generate', function() {
