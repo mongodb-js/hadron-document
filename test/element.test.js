@@ -1907,7 +1907,7 @@ describe('Element', function() {
           });
           it('removes the element from the document', function() {
             expect(element.generateObject()).to.deep.equal([
-                ['00', '01', '02'], ['10', '11', '12']
+              ['00', '01', '02'], ['10', '11', '12']
             ]);
             expect(element.isModified()).to.equal(true);
           });
