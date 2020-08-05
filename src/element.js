@@ -64,7 +64,6 @@ const ARRAY_OR_OBJECT = /^(\[|\{)(.+)(\]|\})$/;
  * Represents an element in a document.
  */
 class Element extends EventEmitter {
-
   /**
    * Bulk edit the element. Can accept JSON strings.
    *
@@ -213,6 +212,17 @@ class Element extends EventEmitter {
       return ObjectGenerator.generate(this.elements);
     }
     return this.currentValue;
+  }
+
+  // TODO
+  generateOriginalObject() {
+    if (this.type === 'Array') {
+      return ObjectGenerator.generateOriginalArray(this.elements);
+    }
+    if (this.elements) {
+      return ObjectGenerator.generateOriginal(this.elements);
+    }
+    return this.value;
   }
 
   /**
@@ -632,7 +642,6 @@ class Element extends EventEmitter {
  * Represents a doubly linked list.
  */
 class LinkedList {
-
   /**
    * Get the element at the provided index.
    *
@@ -661,9 +670,7 @@ class LinkedList {
     return this._map[key];
   }
 
-  /**
-   * Instantiate the new doubly linked list.
-   */
+  // Instantiate the new doubly linked list.
   constructor(doc, originalDoc) {
     this.firstElement = null;
     this.lastElement = null;
