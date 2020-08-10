@@ -412,6 +412,11 @@ describe('Element', function() {
         expect(element.elements.at(0).isEdited()).to.equal(false);
         expect(element.elements.at(0).elements.at(0).isEdited()).to.equal(false);
       });
+
+      it('does not flag the new elements as renamed', function() {
+        expect(element.elements.at(0).isRenamed()).to.equal(false);
+        expect(element.elements.at(0).elements.at(0).isRenamed()).to.equal(false);
+      });
     });
     /* More testing embedded arrays is in 'modifying arrays' */
   });
@@ -820,7 +825,112 @@ describe('Element', function() {
     });
   });
 
-  // TODO: isRenamed tests.
+  describe('#isRenamed', function() {
+    context('when the element has no children', function() {
+      context('when the element is not modified', function() {
+        var element = new Element('name', 'Pineapple', false);
+
+        it('returns false', function() {
+          expect(element.isRenamed()).to.equal(false);
+        });
+      });
+
+      context('when the element is added', function() {
+        var element = new Element('name', 'Pineapple', true);
+
+        it('returns false', function() {
+          expect(element.isRenamed()).to.equal(false);
+        });
+      });
+
+      context('when the element is edited', function() {
+        var element = new Element('name', 'Pineapple', false);
+
+        before(function() {
+          element.edit('not pineapple');
+        });
+
+        it('returns false', function() {
+          expect(element.isRenamed()).to.equal(false);
+        });
+      });
+
+      context('when the element is removed', function() {
+        var element = new Element('name', 'Pineapple', false);
+
+        before(function() {
+          element.remove();
+        });
+
+        it('returns false', function() {
+          expect(element.isRenamed()).to.equal(false);
+        });
+      });
+
+      context('when the element is renamed', function() {
+        var element = new Element('name', 'Pineapple', false);
+
+        before(function() {
+          element.edit('not pineapple');
+        });
+
+        it('returns true', function() {
+          expect(element.isRenamed()).to.equal(false);
+        });
+      });
+
+      context('when the element is reverted', function() {
+        var element = new Element('name', 'Pineapple', false);
+
+        before(function() {
+          element.rename('Not pineapple');
+          element.revert();
+        });
+
+        it('returns false', function() {
+          expect(element.isRenamed()).to.equal(false);
+        });
+      });
+    });
+
+    context('when the element has children', function() {
+      context('when a child element is edited', function() {
+        var element = new Element('names', [ 'testing' ], false);
+
+        before(function() {
+          element.elements.at(0).edit('test');
+        });
+
+        it('returns false', function() {
+          expect(element.isRenamed()).to.equal(false);
+        });
+      });
+
+      context('when a child element is renamed', function() {
+        var element = new Element('names', [ 'testing' ], false);
+
+        before(function() {
+          element.elements.at(0).remove();
+        });
+
+        it('returns false', function() {
+          expect(element.isRenamed()).to.equal(false);
+        });
+      });
+
+      context('when the element is renamed', function() {
+        var element = new Element('names', [ 'testing' ], false);
+
+        before(function() {
+          element.rename('test');
+        });
+
+        it('returns true', function() {
+          expect(element.isRenamed()).to.equal(true);
+        });
+      });
+    });
+  });
 
   describe('#new', function() {
     context('when the element is primitive', function() {
@@ -1355,6 +1465,10 @@ describe('Element', function() {
     it('flags the element as edited', function() {
       expect(element.isEdited()).to.equal(true);
     });
+
+    it('flags the element as renamed', function() {
+      expect(element.isRenamed()).to.equal(true);
+    });
   });
 
   describe('#remove', function() {
@@ -1384,6 +1498,10 @@ describe('Element', function() {
 
       it('resets the edits to the original', function() {
         expect(element.isEdited()).to.equal(false);
+      });
+
+      it('is not flagged as renamed', function() {
+        expect(element.isRenamed()).to.equal(false);
       });
     });
 
@@ -1422,6 +1540,7 @@ describe('Element', function() {
 
       it('resets the flags', function() {
         expect(element.isEdited()).to.equal(false);
+        expect(element.isRenamed()).to.equal(false);
       });
     });
 
@@ -1445,6 +1564,7 @@ describe('Element', function() {
 
       it('resets the flags', function() {
         expect(element.isRemoved()).to.equal(false);
+        expect(element.isRenamed()).to.equal(false);
       });
     });
 
@@ -1607,6 +1727,9 @@ describe('Element', function() {
         });
         it('flags the original element as not modified', function() {
           expect(element.elements.at(0).isModified()).to.equal(false);
+        });
+        it('flags the original element as not renamed', function() {
+          expect(element.elements.at(0).isRenamed()).to.equal(false);
         });
       });
       context('inserting into the middle of the array', function() {
@@ -1863,6 +1986,7 @@ describe('Element', function() {
             expect(element.at(2).key).to.equal(2);
             expect(element.at(2).value).to.equal('item2');
             expect(element.at(2).isEdited()).to.equal(false);
+            expect(element.at(2).isRenamed()).to.equal(false);
           });
           it('sets flags correctly', function() {
             expect(element.at(0).isModified()).to.equal(false);
