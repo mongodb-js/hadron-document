@@ -217,11 +217,14 @@ class Element extends EventEmitter {
   // TODO
   generateOriginalObject() {
     if (this.type === 'Array') {
-      return ObjectGenerator.generateOriginalArray(this.elements);
+      const originalElements = this._generateElements(this.originalExpandableValue);
+      return ObjectGenerator.generateOriginalArray(originalElements);
     }
-    if (this.elements) {
-      return ObjectGenerator.generateOriginal(this.elements);
+    if (this.type === 'Object') {
+      const originalElements = this._generateElements(this.originalExpandableValue);
+      return ObjectGenerator.generateOriginal(originalElements);
     }
+
     return this.value;
   }
 

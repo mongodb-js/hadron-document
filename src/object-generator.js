@@ -134,9 +134,9 @@ class ObjectGenerator {
     if (elements) {
       var array = [];
       for (let element of elements) {
-        if (element.elements) {
+        if (element.originalExpandableValue) {
           array.push(element.generateOriginalObject());
-        } else {
+        } else if (!element.isAdded()) {
           array.push(element.value);
         }
       }

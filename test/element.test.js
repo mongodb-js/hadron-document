@@ -1185,6 +1185,12 @@ describe('Element', function() {
           expect(element.isEdited()).to.equal(true);
         });
 
+        it('generateOriginalObject returns the original value', function() {
+          expect(element.generateOriginalObject()).to.deep.equal({
+            test: 'value'
+          });
+        });
+
         context('when the element is subsequently reverted', function() {
           before(function() {
             element.revert();
@@ -1197,6 +1203,10 @@ describe('Element', function() {
 
           it('returns the original value', function() {
             expect(element.generateObject()).to.deep.equal({ test: 'value' });
+          });
+
+          it('returns the original value', function() {
+            expect(element.generateOriginalObject()).to.deep.equal({ test: 'value' });
           });
 
           it('sets the current type', function() {
@@ -1666,7 +1676,8 @@ describe('Element', function() {
   describe('modifying arrays', function() {
     describe('#insertEnd', function() {
       var doc = new Document({});
-      var element = new Element('emails', [ 'work@example.com' ], false, doc);
+      const items = ['work@example.com'];
+      var element = new Element('emails', items, false, doc);
       const finalArray = [
         'work@example.com',
         'home@example.com',
@@ -1702,6 +1713,9 @@ describe('Element', function() {
         expect(element.elements.at(1).isEdited()).to.equal(false);
         expect(element.elements.at(2).isEdited()).to.equal(false);
         expect(element.elements.at(3).isEdited()).to.equal(false);
+      });
+      it('maintains the original with generateOriginalObject', function() {
+        expect(element.generateOriginalObject()).to.deep.equal(items);
       });
     });
 
@@ -1949,6 +1963,7 @@ describe('Element', function() {
             expect(element.generateObject()).to.deep.equal(
               ['item0', 'item1', 'item2']
             );
+            expect(element.generateOriginalObject()).to.deep.equal(items);
             element.at(1).remove();
           });
           it('deletes the element', function() {
@@ -1975,6 +1990,11 @@ describe('Element', function() {
           it('deletes the element', function() {
             expect(element.generateObject()).to.deep.equal(items);
             expect(element.isModified()).to.equal(true);
+          });
+          it('maintains the original with generateOriginalObject', function() {
+            expect(element.generateOriginalObject()).to.deep.equal(
+              ['item0', 'item1', 'item2']
+            );
           });
           it('updates keys correctly', function() {
             expect(element.at(0).currentKey).to.equal(0);
@@ -2037,6 +2057,9 @@ describe('Element', function() {
             ]);
             expect(element.isModified()).to.equal(true);
           });
+          it('maintains the original with generateOriginalObject', function() {
+            expect(element.generateOriginalObject()).to.deep.equal(items);
+          });
           it('leaves the top level be', function() {
             expect(element.at(0).currentKey).to.equal(0);
             expect(element.at(0).key).to.equal(0);
@@ -2080,6 +2103,7 @@ describe('Element', function() {
             expect(element.generateObject()).to.deep.equal(
               ['item0', 'item9', 'item1', 'item2']
             );
+            expect(element.generateOriginalObject()).to.deep.equal(items);
             element.revert();
           });
           it('reverts the document', function() {
@@ -2110,6 +2134,9 @@ describe('Element', function() {
             expect(element.generateObject()).to.deep.equal(items);
             expect(element.isModified()).to.equal(false);
           });
+          it('maintains the original with generateOriginalObject', function() {
+            expect(element.generateOriginalObject()).to.deep.equal(items);
+          });
           it('updates keys correctly', function() {
             for (let i = 0; i < items.length; i++) {
               expect(element.at(i).currentKey).to.equal(i);
@@ -2130,6 +2157,7 @@ describe('Element', function() {
               expect(element.generateObject()).to.deep.equal([
                 ['00', '01', '99', '02'], ['10', '11', '12']
               ]);
+              expect(element.generateOriginalObject()).to.deep.equal(items);
               element.revert();
             });
             it('reverts the document', function() {
@@ -2188,6 +2216,9 @@ describe('Element', function() {
               expect(element.generateObject()).to.deep.equal([
                 ['00', '01', '99', '02'], ['10', '11', '12']
               ]);
+              it('maintains the original with generateOriginalObject', function() {
+                expect(element.generateOriginalObject()).to.deep.equal(items);
+              });
               element.at(0).revert();
             });
             it('reverts the document', function() {
@@ -2216,6 +2247,9 @@ describe('Element', function() {
               expect(element.generateObject()).to.deep.equal([
                 ['00', '02'], ['10', '11', '12']
               ]);
+              it('maintains the original with generateOriginalObject', function() {
+                expect(element.generateOriginalObject()).to.deep.equal(items);
+              });
               element.at(0).revert();
             });
             it('reverts the document', function() {
@@ -2274,6 +2308,9 @@ describe('Element', function() {
               expect(element.generateObject()).to.deep.equal([
                 ['00', '02'], ['10', '11', '12']
               ]);
+              it('maintains the original with generateOriginalObject', function() {
+                expect(element.generateOriginalObject()).to.deep.equal(items);
+              });
               element.at(0).at(1).revert();
             });
             it('reverts the document', function() {
@@ -2307,6 +2344,9 @@ describe('Element', function() {
         expect(element.generateObject()).to.deep.equal([
           ['00', '99', '01', '02'], ['11', '12']
         ]);
+        it('maintains the original with generateOriginalObject', function() {
+          expect(element.generateOriginalObject()).to.deep.equal(items);
+        });
         element.cancel();
       });
       it('reverts the document', function() {
