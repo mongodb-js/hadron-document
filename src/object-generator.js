@@ -79,6 +79,10 @@ class ObjectGenerator {
         if (element.isRemoved() && element.currentKey !== '') {
           object[element.currentKey] = true;
         }
+        // TODO: why the check for empty key.
+        if (element.isRenamed() && element.currentKey !== '') {
+          object[element.key] = true;
+        }
       }
       return object;
     }

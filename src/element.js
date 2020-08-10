@@ -364,11 +364,7 @@ class Element extends EventEmitter {
    * @returns {Boolean} If the element is edited.
    */
   isEdited() {
-    let keyChanged = false;
-    if (!this.parent || this.parent.isRoot() || this.parent.currentType === 'Object') {
-      keyChanged = (this.key !== this.currentKey);
-    }
-    return (keyChanged ||
+    return (this.isRenamed() ||
       !this._valuesEqual() ||
       this.type !== this.currentType) &&
       !this.isAdded();
@@ -403,6 +399,20 @@ class Element extends EventEmitter {
    */
   isLast() {
     return this.parent.elements.lastElement === this;
+  }
+
+  /**
+   * Determine if the element is renamed.
+   *
+   * @returns {Boolean} If the element was renamed.
+   */
+  isRenamed() {
+    let keyChanged = false;
+    if (!this.parent || this.parent.isRoot() || this.parent.currentType === 'Object') {
+      keyChanged = (this.key !== this.currentKey);
+    }
+
+    return keyChanged;
   }
 
   /**

@@ -820,6 +820,8 @@ describe('Element', function() {
     });
   });
 
+  // TODO: isRenamed tests.
+
   describe('#new', function() {
     context('when the element is primitive', function() {
       var element = new Element('name', 'Aphex Twin', false);
