@@ -214,7 +214,12 @@ class Element extends EventEmitter {
     return this.currentValue;
   }
 
-  // TODO
+  /**
+   * Generate the javascript object represeting the original values
+   * for this element (pre-element removal, renaming, editing).
+   *
+   * @returns {Object} The javascript object.
+   */
   generateOriginalObject() {
     if (this.type === 'Array') {
       const originalElements = this._generateElements(this.originalExpandableValue);
