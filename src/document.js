@@ -55,7 +55,7 @@ class Document extends EventEmitter {
   }
 
   /**
-   * Generate the javascript object reflects updates for this document.
+   * Generate the javascript object reflecting updates in this document.
    * This method, in tandem with `generateUpdateUnsetObject` can be used
    * for the `$set` in an update query to refect changes to a document.
    *
