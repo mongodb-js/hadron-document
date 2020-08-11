@@ -24,14 +24,20 @@ class ObjectGenerator {
     return elements;
   }
 
-  // TODO: docs
+  /**
+   * Generate a javascript object from the elements with their original keys
+   * and values. This can be used in a query with an update to
+   * ensure the values on the document to edit are still up to date.
+   *
+   * @param {Array} elements - The elements.
+   *
+   * @returns {Object} The javascript object.
+   */
   generateOriginal(elements) {
     if (elements) {
       var object = {};
       for (let element of elements) {
-        if (element.key !== '') {
-          object[element.key] = element.generateOriginalObject();
-        }
+        object[element.key] = element.generateOriginalObject();
       }
       return object;
     }
@@ -79,8 +85,7 @@ class ObjectGenerator {
         if (element.isRemoved() && element.currentKey !== '') {
           object[element.currentKey] = true;
         }
-        // TODO: why the check for empty key.
-        if (element.isRenamed() && element.currentKey !== '') {
+        if (element.isRenamed()) {
           object[element.key] = true;
         }
       }
@@ -89,12 +94,20 @@ class ObjectGenerator {
     return elements;
   }
 
-  // TODO docs
+  /**
+   * Generate a javascript object reflecting the original keys and values of
+   * the elements which were changed. This can be used in a query with an
+   * update to ensure the values are still up to date.
+   *
+   * @param {Array} elements - The elements.
+   *
+   * @returns {Object} The javascript unset update object.
+   */
   getOriginalKeysAndValuesForFieldsThatWereUpdated(elements) {
     if (elements) {
       var object = {};
       for (let element of elements) {
-        if (element.isModified() && element.key !== '') {
+        if (element.isModified()) {
           // Using `.key` instead of `.currentKey` to ensure we look at
           // the original field's value.
           object[element.key] = element.generateOriginalObject();
@@ -129,7 +142,13 @@ class ObjectGenerator {
     return elements;
   }
 
-  // TODO
+  /**
+   * Generate an array from the elements using their original values.
+   *
+   * @param {Array} elements - The elements.
+   *
+   * @returns {Array} The array.
+   */
   generateOriginalArray(elements) {
     if (elements) {
       var array = [];
