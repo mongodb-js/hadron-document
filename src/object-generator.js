@@ -37,7 +37,9 @@ class ObjectGenerator {
     if (elements) {
       var object = {};
       for (let element of elements) {
-        object[element.key] = element.generateOriginalObject();
+        if (!element.isAdded()) {
+          object[element.key] = element.generateOriginalObject();
+        }
       }
       return object;
     }

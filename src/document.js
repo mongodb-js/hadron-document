@@ -55,6 +55,15 @@ class Document extends EventEmitter {
   }
 
   /**
+   * Generate the javascript object with the original elements in this document.
+   *
+   * @returns {Object} The original javascript object.
+   */
+  generateOriginalObject() {
+    return ObjectGenerator.generateOriginal(this.elements);
+  }
+
+  /**
    * Get an element by its key.
    *
    * @param {String} key
