@@ -215,7 +215,7 @@ class Element extends EventEmitter {
   }
 
   /**
-   * Generate the javascript object represeting the original values
+   * Generate the javascript object representing the original values
    * for this element (pre-element removal, renaming, editing).
    *
    * @returns {Object} The javascript object.

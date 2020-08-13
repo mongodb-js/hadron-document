@@ -55,43 +55,6 @@ class Document extends EventEmitter {
   }
 
   /**
-   * Generate the javascript object reflecting updates in this document.
-   * This method, in tandem with `generateUpdateUnsetObject` can be used
-   * for the `$set` in an update query to refect changes to a document.
-   *
-   * @returns {Object} The javascript object.
-   */
-  generateSetUpdateObject() {
-    return ObjectGenerator.generateSetUpdate(this.elements);
-  }
-
-  /**
-   * Generate the javascript object reflecting the top level elements that
-   * were removed from this document. The `generateUpdateSetObject` method
-   * reflects updates to nested elements and because of that this method
-   * does not traverse all of the elements, only the first level.
-   * This method, in tandem with `generateUpdateSetObject` can be used
-   * for the `$unset` in an update query to refect changes to a document.
-   *
-   * @returns {Object} The javascript object.
-   */
-  generateUnsetUpdateObject() {
-    return ObjectGenerator.generateUnsetUpdate(this.elements);
-  }
-
-  /**
-   * Generate the javascript object reflecting the elements that
-   * were updated in this document. The values of this object are the original
-   * values, this can be usefull when seeing if the original document
-   * was changed in the background while it was being updated elsewhere.
-   *
-   * @returns {Object} The javascript object.
-   */
-  getOriginalKeysAndValuesForFieldsThatWereUpdated() {
-    return ObjectGenerator.getOriginalKeysAndValuesForFieldsThatWereUpdated(this.elements);
-  }
-
-  /**
    * Get an element by its key.
    *
    * @param {String} key
